@@ -18,6 +18,21 @@ const users = [
   },
 ];
 
+const todos = [
+  {
+    title: "buy milk",
+    by: "1",
+  },
+  {
+    title: "clean house",
+    by: "2",
+  },
+  {
+    title: "water plants",
+    by: "1",
+  },
+];
+
 const typeDefs = gql`
   type Query {
     users: [User]
@@ -25,10 +40,11 @@ const typeDefs = gql`
   }
 
   type User {
-    id: ID
-    firstName: String
-    lastName: String
-    email: String
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    todos: [Todo]
   }
 
   input UserInput {
@@ -40,6 +56,11 @@ const typeDefs = gql`
 
   type Mutation {
     createUser(newUser: UserInput!): User
+  }
+
+  type Todo {
+    title: String!
+    by: ID!
   }
 `;
 
@@ -55,6 +76,9 @@ const resolvers = {
 
       return userNew;
     },
+  },
+  User: {
+    todos: (parent) => todos.filter((todo) => todo.by === parent.id),
   },
 };
 
