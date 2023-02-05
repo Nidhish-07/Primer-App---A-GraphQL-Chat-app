@@ -67,7 +67,13 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     users: () => users,
-    user: (parent, args, context) => users.find((user) => user.id === args.id),
+    user: (parent, args, context) => {
+      if (!context.userLoggedIn) {
+        throw new Error("You must be logged in");
+      }
+
+      return users.find((user) => user.id === args.id);
+    },
   },
   Mutation: {
     createUser: (parent, args, context) => {
@@ -82,7 +88,11 @@ const resolvers = {
   },
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: { userLoggedIn: true },
+});
 
 const { url } = await startStandaloneServer(server, { listen: { port: 8080 } });
 
